@@ -1,10 +1,12 @@
 from scanner.scanner_engine import ScannerEngine
-from scanner.utils import validate_target
+from scanner.validator import TargetValidator
 
 
-target = validate_target("scanme.nmap.org")
+target = TargetValidator.validate(
+    "scanme.nmap.org"
+)
 
-scanner = ScannerEngine(timeout=1)
+scanner = ScannerEngine()
 
 results = scanner.scan_ports(
     target,
@@ -12,5 +14,14 @@ results = scanner.scan_ports(
     threads=10
 )
 
-for result in results:
-    print(result)
+print()
+
+print("=" * 50)
+
+print("Scan Results")
+
+print("=" * 50)
+
+for item in results:
+
+    print(item)
