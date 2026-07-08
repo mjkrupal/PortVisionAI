@@ -1,14 +1,31 @@
-APP_NAME = "Portpilot AI"
-VERSION = "1.0"
+"""
+PortVision AI Configuration
+"""
 
-WINDOW_WIDTH = 1300
+from pathlib import Path
+
+APP_NAME = "PortVision AI"
+APP_VERSION = "1.0.0"
+
+BASE_DIR = Path(__file__).resolve().parent
+
+ASSETS_DIR = BASE_DIR / "assets"
+ICON_DIR = BASE_DIR / "icons"
+LOG_DIR = BASE_DIR / "logs"
+DATABASE_DIR = BASE_DIR / "database"
+REPORT_DIR = BASE_DIR / "reports"
+
+WINDOW_WIDTH = 1400
 WINDOW_HEIGHT = 850
 
-BACKGROUND = "#101010"
-FRAME = "#1A1A1A"
+DEFAULT_THEME = "dark"
 
-GREEN = "#00FF66"
+ACCENT_COLOR = "#00FF66"
 
-TEXT = "#FFFFFF"
+OLLAMA_MODEL = "llama3.2"
 
-FONT = "Consolas"
+LOG_LEVEL = "INFO"
+
+MAX_THREADS = 200
+
+DEFAULT_TIMEOUT = 1.0
