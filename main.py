@@ -1,25 +1,13 @@
-"""
-PortVision AI
-
-Application Entry Point
-"""
-
-from utils.logger import get_logger
-
-logger = get_logger("PortVision")
-
-logger.info("Starting PortVision AI...")
+from gui.app import PortVisionApp
 
 
 def main():
 
-    print("===================================")
-    print(" PortVision AI")
-    print(" AI-Powered Network Port Scanner")
-    print("===================================")
+    app = PortVisionApp()
 
-    print("Application initialized successfully.")
+    app.mainloop()
 
 
 if __name__ == "__main__":
+
     main()
