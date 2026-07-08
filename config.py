@@ -22,10 +22,25 @@ DEFAULT_THEME = "dark"
 
 ACCENT_COLOR = "#00FF66"
 
-OLLAMA_MODEL = "llama3.2"
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# -----------------------
+# OpenAI
+# -----------------------
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+OPENAI_MODEL = os.getenv(
+    "OPENAI_MODEL",
+    "gpt-5.5"
+)
 
 LOG_LEVEL = "INFO"
 
 MAX_THREADS = 200
 
 DEFAULT_TIMEOUT = 1.0
+

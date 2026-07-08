@@ -5,7 +5,9 @@ from gui.theme import Theme
 from ai.prompt_parser import PromptParser
 from ai.scan_planner import ScanPlanner
 from gui.scan_plan_dialog import ScanPlanDialog
+from ai.assistant import Assistant
 
+assistant = Assistant()
 
 
 class AIChatPage(BasePage):
@@ -91,7 +93,10 @@ class AIChatPage(BasePage):
             f"\n\nYou:\n{prompt}\n"
         )
 
-        plan = PromptParser.parse(prompt)
+        from ai.assistant import Assistant
+
+
+        plan = assistant.create_scan_plan(prompt)
 
         dialog = ScanPlanDialog(
             self,
