@@ -4,6 +4,7 @@ from gui.pages import BasePage
 from gui.theme import Theme
 from ai.prompt_parser import PromptParser
 from ai.scan_planner import ScanPlanner
+from gui.scan_plan_dialog import ScanPlanDialog
 
 
 
@@ -91,6 +92,15 @@ class AIChatPage(BasePage):
         )
 
         plan = PromptParser.parse(prompt)
+
+        dialog = ScanPlanDialog(
+            self,
+            plan,
+            lambda: self.chat.insert(
+                "end",
+                "\nStarting Scan...\n"
+            )
+        )
 
         response = ScanPlanner.generate(plan)
 
