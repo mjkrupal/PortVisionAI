@@ -94,6 +94,8 @@ class AIChatPage(BasePage):
 
         response = ScanPlanner.generate(plan)
 
+        self.current_plan = plan
+
         self.chat.insert(
             "end",
             "\nAI Scan Planner\n"
