@@ -36,3 +36,21 @@ class Assistant:
         # Offline fallback
 
         return PromptParser.parse(prompt)
+    
+    def analyze_results(self, results):
+
+        if self.online:
+
+            try:
+
+                return self.ai.analyze_scan(results)
+
+            except Exception:
+
+                pass
+
+        return {
+            "risk":"Unknown",
+            "summary":"Offline mode.",
+            "recommendations":[]
+        }

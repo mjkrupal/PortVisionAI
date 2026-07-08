@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from gui.pages import BasePage
 from gui.theme import Theme
-
+from utils.app_state import state
 
 class Dashboard(BasePage):
 

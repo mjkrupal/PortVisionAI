@@ -7,8 +7,10 @@ from config import (
     OPENAI_MODEL,
 )
 
-from ai.prompt_templates import SYSTEM_PROMPT
-
+from ai.prompt_templates import (
+    SYSTEM_PROMPT,
+    SECURITY_ANALYSIS_PROMPT
+)
 
 class OpenAIClient:
 
@@ -54,3 +56,28 @@ class OpenAIClient:
         content = response.choices[0].message.content
 
         return json.loads(content)
+    
+    def analyze_scan(self, scan_results):
+
+        response = self.client.chat.completions.create(
+
+            model=OPENAI_MODEL,
+
+            messages=[
+                {
+                    "role": "system",
+                    "content": SECURITY_ANALYSIS_PROMPT
+                },
+                {
+                    "role": "user",
+                    "content": str(scan_results)
+                }
+            ],
+
+            temperature=0
+
+        )
+
+        return json.loads(
+            response.choices[0].message.content
+        )

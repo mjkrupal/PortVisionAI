@@ -29,3 +29,26 @@ Rules:
 
 - Output only JSON.
 """
+
+SECURITY_ANALYSIS_PROMPT = """
+You are an expert penetration tester.
+
+Analyze the following scan results.
+
+Return ONLY valid JSON.
+
+Schema:
+
+{
+    "risk":"Low|Medium|High|Critical",
+    "summary":"",
+    "recommendations":[
+        "",
+        ""
+    ]
+}
+
+The recommendations must be practical and defensive.
+Do not include exploitation instructions.
+Return JSON only.
+"""

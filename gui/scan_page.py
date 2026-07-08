@@ -6,6 +6,8 @@ from tkinter import ttk
 from gui.pages import BasePage
 from scanner.scan_engine import ScanEngine
 from scanner.scan_controller import ScanController
+from ai.assistant import Assistant
+from utils.app_state import state
 
 
 class ScanPage(BasePage):
@@ -250,6 +252,15 @@ class ScanPage(BasePage):
             self.log.see("end")
 
         self.after(0, finish)
+        assistant = Assistant()
+
+        analysis = assistant.analyze_results(results)
+
+        state.current_scan.risk_score = analysis["risk"]
+
+        state.current_scan.summary = analysis["summary"]
+
+        state.current_scan.recommendations = analysis["recommendations"]
 
     def update_progress(self, event):
         """

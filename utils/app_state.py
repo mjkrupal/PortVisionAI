@@ -27,6 +27,10 @@ class ScanSummary:
 
     completed: bool = False
 
+    summary: str = ""
+
+    recommendations: list = field(default_factory=list)
+
 
 @dataclass
 class AppState:
