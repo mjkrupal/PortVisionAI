@@ -1,75 +1,67 @@
-import customtkinter as ctk
-from gui.theme import Theme
+from gui.pages import BasePage
 
 
-class Dashboard(ctk.CTkFrame):
+class Dashboard(BasePage):
 
     def __init__(self, parent):
 
-        super().__init__(
-            parent,
-            fg_color=Theme.WINDOW_BG
-        )
+        super().__init__(parent, "Dashboard")
 
-        title = ctk.CTkLabel(
-            self,
-            text="Dashboard",
-            font=(Theme.FONT, 28, "bold"),
-            text_color=Theme.ACCENT
-        )
-
-        title.pack(anchor="w", padx=30, pady=(30, 20))
-
-        welcome = ctk.CTkLabel(
-            self,
-            text="Welcome to PortVision AI",
-            font=(Theme.FONT, 18),
-            text_color="white"
-        )
-
-        welcome.pack(anchor="w", padx=30)
-
-        self.create_cards()
-
-    def create_cards(self):
-
-        frame = ctk.CTkFrame(
-            self,
-            fg_color="transparent"
-        )
-
-        frame.pack(fill="x", padx=30, pady=25)
+        body = self
 
         cards = [
             ("Open Ports", "0"),
+            ("Closed", "0"),
             ("Risk Score", "0"),
             ("CVEs", "0"),
-            ("Last Scan", "--")
+            ("Duration", "--"),
+            ("Threads", "0"),
         ]
 
-        for title, value in cards:
+        import customtkinter as ctk
 
-            card = ctk.CTkFrame(
-                frame,
-                width=220,
-                height=120,
-                fg_color=Theme.CARD_BG
-            )
+        frame = ctk.CTkFrame(
+            body,
+            fg_color="transparent"
+        )
 
-            card.pack(side="left", padx=10)
+        frame.grid(row=1, column=0, padx=25, sticky="nsew")
 
-            card.pack_propagate(False)
+        rows = 2
+        cols = 3
 
-            ctk.CTkLabel(
-                card,
-                text=title,
-                font=(Theme.FONT, 16),
-                text_color="gray"
-            ).pack(pady=(20, 5))
+        index = 0
 
-            ctk.CTkLabel(
-                card,
-                text=value,
-                font=(Theme.FONT, 30, "bold"),
-                text_color=Theme.ACCENT
-            ).pack()
+        for r in range(rows):
+
+            frame.grid_rowconfigure(r, weight=1)
+
+            for c in range(cols):
+
+                frame.grid_columnconfigure(c, weight=1)
+
+                title, value = cards[index]
+
+                card = ctk.CTkFrame(frame)
+
+                card.grid(
+                    row=r,
+                    column=c,
+                    padx=15,
+                    pady=15,
+                    sticky="nsew"
+                )
+
+                ctk.CTkLabel(
+                    card,
+                    text=title,
+                    font=("Segoe UI", 16)
+                ).pack(pady=(25, 8))
+
+                ctk.CTkLabel(
+                    card,
+                    text=value,
+                    font=("Segoe UI", 28, "bold")
+                ).pack()
+
+                index += 1

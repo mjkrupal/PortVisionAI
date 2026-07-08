@@ -4,45 +4,42 @@ from gui.theme import Theme
 
 class Sidebar(ctk.CTkFrame):
 
-    def __init__(self, parent):
+    def __init__(self, parent, callback):
 
         super().__init__(
             parent,
-            width=230,
-            fg_color=Theme.SIDEBAR_BG,
-            corner_radius=0
+            width=220,
+            fg_color=Theme.SIDEBAR_BG
         )
 
-        self.pack_propagate(False)
+        self.callback = callback
 
         title = ctk.CTkLabel(
             self,
             text="PORTVISION AI",
-            font=(Theme.FONT, 22, "bold"),
+            font=("Segoe UI", 22, "bold"),
             text_color=Theme.ACCENT
         )
 
-        title.pack(pady=(30, 20))
+        title.pack(pady=30)
 
-        buttons = [
-            "🏠 Dashboard",
-            "🔍 Scan",
-            "🤖 AI Chat",
-            "📊 Reports",
-            "📜 History",
-            "⚙ Settings",
-            "ℹ About"
-        ]
+        buttons = {
+            "Dashboard": "dashboard",
+            "Scan": "scan",
+            "AI Assistant": "ai",
+            "Reports": "reports",
+            "History": "history",
+            "Settings": "settings",
+            "About": "about",
+        }
 
-        for text in buttons:
+        for text, page in buttons.items():
 
             btn = ctk.CTkButton(
                 self,
                 text=text,
-                height=45,
-                anchor="w",
-                fg_color="transparent",
-                hover_color="#1f2937"
+                command=lambda p=page: self.callback(p),
+                anchor="w"
             )
 
-            btn.pack(fill="x", padx=15, pady=5)
+            btn.pack(fill="x", padx=15, pady=6)
