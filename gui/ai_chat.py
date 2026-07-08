@@ -2,6 +2,9 @@ import customtkinter as ctk
 
 from gui.pages import BasePage
 from gui.theme import Theme
+from ai.prompt_parser import PromptParser
+from ai.scan_planner import ScanPlanner
+
 
 
 class AIChatPage(BasePage):
@@ -87,11 +90,18 @@ class AIChatPage(BasePage):
             f"\n\nYou:\n{prompt}\n"
         )
 
+        plan = PromptParser.parse(prompt)
+
+        response = ScanPlanner.generate(plan)
+
         self.chat.insert(
             "end",
-            "\nAI:\n"
-            "Prompt received.\n"
-            "Ollama integration coming in the next phase.\n"
+            "\nAI Scan Planner\n"
+        )
+
+        self.chat.insert(
+            "end",
+            response
         )
 
         self.prompt.delete(0, "end")
