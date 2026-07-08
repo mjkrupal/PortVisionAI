@@ -1,4 +1,6 @@
+import customtkinter as ctk
 from gui.pages import BasePage
+from gui.theme import Theme
 
 
 class Dashboard(BasePage):
@@ -7,61 +9,149 @@ class Dashboard(BasePage):
 
         super().__init__(parent, "Dashboard")
 
-        body = self
+        self.create_cards()
+        self.create_ai_status()
+        self.create_recent_activity()
+        self.create_quick_actions()
 
-        cards = [
-            ("Open Ports", "0"),
-            ("Closed", "0"),
-            ("Risk Score", "0"),
-            ("CVEs", "0"),
-            ("Duration", "--"),
-            ("Threads", "0"),
-        ]
+    def create_cards(self):
 
-        import customtkinter as ctk
+        frame = ctk.CTkFrame(self)
 
-        frame = ctk.CTkFrame(
-            body,
-            fg_color="transparent"
+        frame.grid(
+            row=1,
+            column=0,
+            padx=20,
+            pady=15,
+            sticky="ew"
         )
 
-        frame.grid(row=1, column=0, padx=25, sticky="nsew")
+        frame.grid_columnconfigure((0,1,2,3,4,5),weight=1)
 
-        rows = 2
-        cols = 3
+        cards = [
+            ("Open Ports","0"),
+            ("Closed","0"),
+            ("Filtered","0"),
+            ("Risk","Low"),
+            ("Duration","0 sec"),
+            ("Threads","200")
+        ]
 
-        index = 0
+        for i,(title,value) in enumerate(cards):
 
-        for r in range(rows):
+            card = ctk.CTkFrame(frame)
 
-            frame.grid_rowconfigure(r, weight=1)
+            card.grid(
+                row=0,
+                column=i,
+                padx=8,
+                pady=8,
+                sticky="nsew"
+            )
 
-            for c in range(cols):
+            ctk.CTkLabel(
+                card,
+                text=title,
+                text_color="gray"
+            ).pack(pady=(15,5))
 
-                frame.grid_columnconfigure(c, weight=1)
+            ctk.CTkLabel(
+                card,
+                text=value,
+                font=(Theme.FONT,22,"bold"),
+                text_color=Theme.ACCENT
+            ).pack(pady=(0,15))
 
-                title, value = cards[index]
+    def create_ai_status(self):
 
-                card = ctk.CTkFrame(frame)
+        frame=ctk.CTkFrame(self)
 
-                card.grid(
-                    row=r,
-                    column=c,
-                    padx=15,
-                    pady=15,
-                    sticky="nsew"
-                )
+        frame.grid(
+            row=2,
+            column=0,
+            sticky="ew",
+            padx=20,
+            pady=10
+        )
 
-                ctk.CTkLabel(
-                    card,
-                    text=title,
-                    font=("Segoe UI", 16)
-                ).pack(pady=(25, 8))
+        ctk.CTkLabel(
+            frame,
+            text="AI Status",
+            font=(Theme.FONT,20,"bold"),
+            text_color=Theme.ACCENT
+        ).pack(anchor="w",padx=15,pady=(15,5))
 
-                ctk.CTkLabel(
-                    card,
-                    text=value,
-                    font=("Segoe UI", 28, "bold")
-                ).pack()
+        ctk.CTkLabel(
+            frame,
+            text="Model : llama3.2\nStatus : Waiting for Ollama",
+            justify="left"
+        ).pack(anchor="w",padx=15,pady=(0,15))
 
-                index += 1
+    def create_recent_activity(self):
+
+        frame=ctk.CTkFrame(self)
+
+        frame.grid(
+            row=3,
+            column=0,
+            sticky="nsew",
+            padx=20,
+            pady=10
+        )
+
+        ctk.CTkLabel(
+            frame,
+            text="Recent Activity",
+            font=(Theme.FONT,20,"bold"),
+            text_color=Theme.ACCENT
+        ).pack(anchor="w",padx=15,pady=(15,10))
+
+        self.activity=ctk.CTkTextbox(
+            frame,
+            height=140
+        )
+
+        self.activity.pack(
+            fill="both",
+            expand=True,
+            padx=15,
+            pady=(0,15)
+        )
+
+        self.activity.insert(
+            "end",
+            "• PortVision AI Ready\n"
+            "• Waiting for first scan...\n"
+        )
+
+    def create_quick_actions(self):
+
+        frame=ctk.CTkFrame(self)
+
+        frame.grid(
+            row=4,
+            column=0,
+            sticky="ew",
+            padx=20,
+            pady=10
+        )
+
+        buttons=[
+            "New Scan",
+            "AI Assistant",
+            "Reports",
+            "History"
+        ]
+
+        for text in buttons:
+
+            btn=ctk.CTkButton(
+                frame,
+                text=text
+            )
+
+            btn.pack(
+                side="left",
+                padx=10,
+                pady=15
+            )

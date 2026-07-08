@@ -5,6 +5,7 @@ from tkinter import ttk
 
 from gui.pages import BasePage
 from scanner.scan_engine import ScanEngine
+from scanner.scan_controller import ScanController
 
 
 class ScanPage(BasePage):
@@ -13,13 +14,19 @@ class ScanPage(BasePage):
 
         super().__init__(parent, "Scan Center")
 
-        self.engine = ScanEngine()
+        self.controller = ScanController(
+            progress_callback=self.update_progress,
+            result_callback=self.add_result,
+            finished_callback=self.scan_finished,
+        )
 
         self.build_ui()
 
     def build_ui(self):
 
-        # ---------- Top Controls ----------
+        # ===========================
+        # Top Controls
+        # ===========================
 
         top = ctk.CTkFrame(self)
         top.grid(row=1, column=0, sticky="ew", padx=20)
@@ -49,17 +56,28 @@ class ScanPage(BasePage):
             command=self.start_scan
         )
 
-        self.scan_btn.grid(row=0, column=2, padx=10)
+        self.scan_btn.grid(
+            row=0,
+            column=2,
+            padx=10
+        )
 
         self.stop_btn = ctk.CTkButton(
             top,
             text="■ Stop",
-            fg_color="red"
+            fg_color="red",
+            command=self.controller.stop_scan
         )
 
-        self.stop_btn.grid(row=0, column=3)
+        self.stop_btn.grid(
+            row=0,
+            column=3,
+            padx=10
+        )
 
-        # ---------- Progress ----------
+        # ===========================
+        # Progress Bar
+        # ===========================
 
         self.progress = ctk.CTkProgressBar(self)
 
@@ -73,16 +91,33 @@ class ScanPage(BasePage):
 
         self.progress.set(0)
 
-        # ---------- Results ----------
+        # ===========================
+        # Results Table
+        # ===========================
+
+        columns = (
+            "Port",
+            "Service",
+            "Status",
+            "Latency"
+        )
 
         self.tree = ttk.Treeview(
             self,
-            columns=("Port",),
+            columns=columns,
             show="headings",
             height=12
         )
 
-        self.tree.heading("Port", text="Open Port")
+        for col in columns:
+
+            self.tree.heading(col, text=col)
+
+            self.tree.column(
+                col,
+                anchor="center",
+                width=150
+            )
 
         self.tree.grid(
             row=3,
@@ -91,7 +126,9 @@ class ScanPage(BasePage):
             padx=20
         )
 
-        # ---------- Activity ----------
+        # ===========================
+        # Activity Log
+        # ===========================
 
         self.log = ctk.CTkTextbox(
             self,
@@ -110,16 +147,34 @@ class ScanPage(BasePage):
 
     def start_scan(self):
 
-        threading.Thread(
-            target=self.run_scan,
-            daemon=True
-        ).start()
+        target = self.target.get().strip()
+
+        if not target:
+            target = "127.0.0.1"
+
+        self.progress.set(0)
+
+        self.tree.delete(*self.tree.get_children())
+
+        self.log.delete("1.0", "end")
+
+        self.log.insert(
+            "end",
+            f"[*] Starting scan on {target}\n\n"
+        )
+
+        self.controller.start_scan(
+            target,
+            "Top 100",
+        )
 
     def run_scan(self):
 
         self.progress.set(0)
 
         self.tree.delete(*self.tree.get_children())
+
+        self.log.delete("1.0", "end")
 
         target = self.target.get().strip()
 
@@ -128,39 +183,112 @@ class ScanPage(BasePage):
 
         self.log.insert(
             "end",
-            f"\nScanning {target}...\n"
+            f"[*] Starting scan on {target}\n\n"
         )
 
         start = time.time()
 
-        ports = self.engine.scan(
+        results = self.engine.scan(
             target,
             "Top 100"
         )
 
         elapsed = round(
-            time.time()-start,
+            time.time() - start,
             2
         )
 
-        for port in ports:
-
-            self.tree.insert(
-                "",
-                "end",
-                values=(port,)
-            )
+        if not results:
 
             self.log.insert(
                 "end",
-                f"OPEN : {port}\n"
+                "[!] No open ports found.\n"
             )
+
+        else:
+
+            for result in results:
+
+                self.tree.insert(
+                    "",
+                    "end",
+                    values=(
+                        result.port,
+                        result.service,
+                        result.status,
+                        f"{result.latency:.4f}s"
+                    )
+                )
+
+                self.log.insert(
+                    "end",
+                    f"[OPEN] Port {result.port:<5} "
+                    f"Service: {result.service:<15} "
+                    f"Latency: {result.latency:.4f}s\n"
+                )
 
         self.progress.set(1)
 
         self.log.insert(
             "end",
-            f"\nFinished in {elapsed} sec\n"
+            f"\n[✓] Scan completed in {elapsed} seconds\n"
+        )
+
+        self.log.see("end")
+
+    def scan_finished(self, results):
+
+        def finish():
+
+            self.progress.set(1)
+
+            self.log.insert(
+                "end",
+                f"\n[✓] Scan Complete\n"
+            )
+
+            self.log.see("end")
+
+        self.after(0, finish)
+
+    def update_progress(self, event):
+        """
+        Update progress bar from ScanEngine.
+        """
+        self.after(
+            0,
+            lambda: self.progress.set(event.percent)
+        )
+
+
+    def add_result(self, event):
+        """
+        Receive a ScanResult from the engine.
+        """
+        self.after(
+            0,
+            lambda: self.insert_result(event.result)
+        )
+
+
+    def insert_result(self, result):
+        """
+        Add one result to the table and log.
+        """
+        self.tree.insert(
+            "",
+            "end",
+            values=(
+                result.port,
+                result.service,
+                result.status,
+                f"{result.latency:.4f}s",
+            )
+        )
+
+        self.log.insert(
+            "end",
+            f"[OPEN] {result.port:<5} {result.service}\n"
         )
 
         self.log.see("end")

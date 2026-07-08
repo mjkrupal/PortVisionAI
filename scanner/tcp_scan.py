@@ -1,8 +1,6 @@
-"""
-TCP Scanner
-"""
-
+from scanner.models import ScanResult
 import socket
+import time
 
 
 class TCPScanner:
@@ -20,8 +18,32 @@ class TCPScanner:
 
         sock.settimeout(self.timeout)
 
+        start = time.perf_counter()
+
         result = sock.connect_ex((host, port))
+
+        latency = round(
+            time.perf_counter() - start,
+            4
+        )
+
+        service = ""
+
+        try:
+            service = socket.getservbyport(port)
+        except OSError:
+            service = "unknown"
 
         sock.close()
 
-        return result == 0
+        if result == 0:
+
+            return ScanResult(
+                port=port,
+                protocol="TCP",
+                status="Open",
+                service=service,
+                latency=latency
+            )
+
+        return None
