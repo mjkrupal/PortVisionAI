@@ -34,40 +34,14 @@ class PortVisionApp(ctk.CTk):
 
     def build_ui(self):
 
-        title = ctk.CTkLabel(
-            self,
-            text="PortVision AI",
-            font=(
-                Theme.FONT,
-                Theme.TITLE_SIZE,
-                "bold",
-            ),
-            text_color=Theme.ACCENT,
-        )
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
 
-        title.pack(
-            pady=(40, 10)
-        )
+        from gui.sidebar import Sidebar
+        from gui.dashboard import Dashboard
 
-        subtitle = ctk.CTkLabel(
-            self,
-            text="AI Powered Intelligent Network Port Scanner",
-            font=(
-                Theme.FONT,
-                16,
-            ),
-            text_color=Theme.SUBTEXT,
-        )
+        self.sidebar = Sidebar(self)
+        self.sidebar.grid(row=0, column=0, sticky="ns")
 
-        subtitle.pack()
-
-        button = ctk.CTkButton(
-            self,
-            text="Start Scanning",
-            width=220,
-            height=45,
-        )
-
-        button.pack(
-            pady=40
-        )
+        self.dashboard = Dashboard(self)
+        self.dashboard.grid(row=0, column=1, sticky="nsew")
